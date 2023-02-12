@@ -26,9 +26,15 @@ app.post("/login", async (req, res) => {
   const user = await prisma.users.findUnique({
     where: { username: username },
   });
-  return res.json(user); 
-})
 
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+  else {
+    return res.json(user);
+  }
+});
 
 
 
