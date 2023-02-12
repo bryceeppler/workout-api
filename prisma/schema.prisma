@@ -1,18 +1,52 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model cardioSession {
+  id       Int       @id @default(autoincrement())
+  date     DateTime? @default(now())
+  duration Int?
+  userId   Int
+  users    users     @relation(fields: [userId], references: [id])
 }
 
-model Todo {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  text      String
-  completed Boolean
+model completedWorkouts {
+  id        Int       @id @default(autoincrement())
+  date      DateTime? @default(now())
+  title     String?   @db.VarChar
+  userId    Int
+  workoutId Int
+  status    String?   @db.VarChar
+  users     users     @relation(fields: [userId], references: [id])
+  workouts  workouts  @relation(fields: [workoutId], references: [id])
+}
+
+model icePlunge {
+  id       Int       @id @default(autoincrement())
+  date     DateTime? @default(now())
+  duration Int?
+  userId   Int
+  users    users     @relation(fields: [userId], references: [id])
+}
+
+model users {
+  id                Int                 @id @default(autoincrement())
+  username          String?             @db.VarChar
+  cardioSession     cardioSession[]
+  completedWorkouts completedWorkouts[]
+  icePlunge         icePlunge[]
+}
+
+model workouts {
+  id                Int                 @id @default(autoincrement())
+  title             String?             @db.VarChar
+  workout_number    Int?
+  workout_str       String?             @db.VarChar
+  date              DateTime
+  completedWorkouts completedWorkouts[]
 }
