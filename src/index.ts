@@ -19,6 +19,19 @@ app.get("/workouts", async (req, res) => {
   res.json(todos);
 });
 
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body as { username: string, password: string };
+
+  // get userId from username
+  const user = await prisma.users.findUnique({
+    where: { username: username },
+  });
+  return res.json(user); 
+})
+
+
+
+
 
 
 app.get("/", async (req, res) => {

@@ -36,7 +36,7 @@ model icePlunge {
 
 model users {
   id                Int                 @id @default(autoincrement())
-  username          String?             @db.VarChar
+  username          String? @unique            @db.VarChar
   cardioSession     cardioSession[]
   completedWorkouts completedWorkouts[]
   icePlunge         icePlunge[]
