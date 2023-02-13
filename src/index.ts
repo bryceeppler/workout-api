@@ -208,7 +208,7 @@ app.post("/createIcePlunge", async (req, res) => {
   };
 
   // create date from string
-  const dateObject = new Date(date)
+  const dateObject = new Date(date);
   const icePlunge = await prisma.icePlunge.create({
     data: {
       userId: uid,
@@ -226,8 +226,7 @@ app.post("/createCardioSession", async (req, res) => {
     duration: number;
     date: string;
   };
-  const dateObject = new Date(date)
-
+  const dateObject = new Date(date);
 
   const cardioSession = await prisma.cardioSession.create({
     data: {
@@ -238,5 +237,4 @@ app.post("/createCardioSession", async (req, res) => {
   });
 
   return res.json({ success: true, message: "Cardio Session created" });
-
 });
