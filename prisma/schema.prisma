@@ -7,39 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model cardioSession {
-  id       Int       @id @default(autoincrement())
-  date     DateTime? @default(now())
-  duration Int?
-  userId   Int
-  users    users     @relation(fields: [userId], references: [id])
-}
-
-model completedWorkouts {
-  id        Int       @id @default(autoincrement())
-  date      DateTime? @default(now())
-  title     String?   @db.VarChar
-  userId    Int
-  workoutId Int
-  status    String?   @db.VarChar
-  users     users     @relation(fields: [userId], references: [id])
-  workouts  workouts  @relation(fields: [workoutId], references: [id])
-}
-
-model icePlunge {
-  id       Int       @id @default(autoincrement())
-  date     DateTime? @default(now())
-  duration Int?
-  userId   Int
-  users    users     @relation(fields: [userId], references: [id])
-}
-
 model users {
   id                Int                 @id @default(autoincrement())
-  username          String? @unique            @db.VarChar
-  cardioSession     cardioSession[]
+  username          String?           @unique  @db.VarChar
   completedWorkouts completedWorkouts[]
-  icePlunge         icePlunge[]
+  icePlunges        icePlunge[]
+  cardioSessions    cardioSession[]
 }
 
 model workouts {
@@ -49,4 +22,31 @@ model workouts {
   workout_str       String?             @db.VarChar
   date              DateTime
   completedWorkouts completedWorkouts[]
+}
+
+model completedWorkouts {
+  id          Int       @id @default(autoincrement())
+  date DateTime? @default(now())
+  title       String?   @db.VarChar
+  userId      Int
+  workoutId   Int
+  status      String?   @db.VarChar
+  user        users     @relation(fields: [userId], references: [id])
+  workout     workouts  @relation(fields: [workoutId], references: [id])
+}
+
+model icePlunge {
+  id        Int     @id @default(autoincrement())
+  date      DateTime? @default(now())
+  duration  Int?
+  userId    Int
+  user      users   @relation(fields: [userId], references: [id])
+}
+
+model cardioSession {
+  id        Int     @id @default(autoincrement())
+  date      DateTime? @default(now())
+  duration  Int?
+  userId    Int
+  user      users   @relation(fields: [userId], references: [id])
 }
