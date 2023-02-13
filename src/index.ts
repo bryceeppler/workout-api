@@ -24,6 +24,55 @@ app.get("/workouts", async (req, res) => {
   return res.json(response);
 });
 
+
+app.get("/incompleteworkouts/:id", async (req, res) => {
+
+  // getIncompleteWorkouts: publicProcedure
+  // .input(z.object({ id: z.number() }))
+  // .query(({ ctx, input }) => {
+  //   return ctx.prisma.workouts.findMany({
+  //     where: {
+  //       completedWorkouts: {
+  //         every: {
+  //           userId: {
+  //             not: input.id,
+  //           },
+  //         },
+  //       },
+  //     },
+  //     orderBy: {
+  //       workout_number: "asc",
+  //     },
+  //   });
+  // }),
+
+  const id = req.params.id;
+  const workouts = await prisma.workouts.findMany({
+    where: {
+      completedWorkouts: {
+        every: {
+          userId: {
+            not: Number(id),
+          },
+        },
+      },
+    },
+    orderBy: {
+      workout_number: "asc",
+    },
+  });
+  
+  
+  
+
+  // return "success", and "workouts": []
+  let response = {
+    success: true,
+    workouts: workouts,
+  };
+  return res.json(response);
+});
+
 app.post("/login", async (req, res) => {
   const { username, password } = req.body as { username: string, password: string };
 
