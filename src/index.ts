@@ -13,8 +13,7 @@ app.use(express.text({ type: "text/html" }));
 app.get("/workouts", async (req, res) => {
   const workouts = await prisma.workouts.findMany({
     orderBy: { workout_number: "asc" },
-  }
-  );
+  });
 
   // return "success", and "workouts": []
   let response = {
@@ -24,9 +23,7 @@ app.get("/workouts", async (req, res) => {
   return res.json(response);
 });
 
-
 app.get("/incompleteworkouts/:id", async (req, res) => {
-
   // getIncompleteWorkouts: publicProcedure
   // .input(z.object({ id: z.number() }))
   // .query(({ ctx, input }) => {
@@ -61,9 +58,6 @@ app.get("/incompleteworkouts/:id", async (req, res) => {
       workout_number: "asc",
     },
   });
-  
-  
-  
 
   // return "success", and "workouts": []
   let response = {
@@ -74,7 +68,10 @@ app.get("/incompleteworkouts/:id", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { username, password } = req.body as { username: string, password: string };
+  const { username, password } = req.body as {
+    username: string;
+    password: string;
+  };
 
   // get userId from username
   const user = await prisma.users.findUnique({
@@ -84,8 +81,7 @@ app.post("/login", async (req, res) => {
   if (!user) {
     res.status(404).json({ error: "User not found" });
     return;
-  }
-  else {
+  } else {
     return res.json(user);
   }
 });
@@ -101,25 +97,21 @@ app.get("/user/stats/", async (req, res) => {
 
   // get all coldPlunges
   const coldPlunges = await prisma.icePlunge.findMany();
-  const completedWorkouts = await prisma.completedWorkouts.findMany(
-    {
-      where: {
-        status: {
-          equals: "completed"
-      }
-    }
-  }
-  );
+  const completedWorkouts = await prisma.completedWorkouts.findMany({
+    where: {
+      status: {
+        equals: "completed",
+      },
+    },
+  });
 
-  const cardioSessions = await prisma.cardioSession.findMany(
-    {
-      where: {
-        duration: {
-          gt: 10
-        }
-      }
-    }
-  )
+  const cardioSessions = await prisma.cardioSession.findMany({
+    where: {
+      duration: {
+        gt: 10,
+      },
+    },
+  });
 
   // For each user create an object like this
   // {
@@ -160,42 +152,41 @@ app.get("/user/stats/", async (req, res) => {
       }
     }
 
-    newUser.totalPoints = newUser.coldPlunges + newUser.completedWorkouts + newUser.cardioSessions;
+    newUser.totalPoints =
+      newUser.coldPlunges + newUser.completedWorkouts + newUser.cardioSessions;
 
     newUserList.push(newUser);
-
   }
-
 
   const stats = {
-    success : true,
-    users: newUserList
-  }
+    success: true,
+    users: newUserList,
+  };
 
-  return res.json(stats); 
+  return res.json(stats);
 });
-
-
-
-
-
 
 app.get("/", async (req, res) => {
   const response = {
-    "success": true,
-    "message": "Welcome to the API"
-  }
+    success: true,
+    message: "Welcome to the API",
+  };
   return res.json(response);
 });
 
 app.listen(Number(port), "0.0.0.0", () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Example app listening at http://localhost:${port}`);
 });
 
 app.post("/completeWorkout", async (req, res) => {
   // // accept a workout id and user id and create a completedWorkout entry with the given status
-// // return the completedWorkout entry
-  const { id, userId, status, title } = req.body as { id: number, userId: number, status: string, title: string };
+  // // return the completedWorkout entry
+  const { id, userId, status, title } = req.body as {
+    id: number;
+    userId: number;
+    status: string;
+    title: string;
+  };
 
   const completedWorkout = await prisma.completedWorkouts.create({
     data: {
@@ -206,5 +197,46 @@ app.post("/completeWorkout", async (req, res) => {
     },
   });
 
-  return(res.json({success: true, message: "Workout completed"}));
+  return res.json({ success: true, message: "Workout completed" });
+});
+
+app.post("/createIcePlunge", async (req, res) => {
+  const { uid, duration, date } = req.body as {
+    uid: number;
+    duration: number;
+    date: string;
+  };
+
+  // create date from string
+  const dateObject = new Date(date)
+  const icePlunge = await prisma.icePlunge.create({
+    data: {
+      userId: uid,
+      duration: duration,
+      date: dateObject,
+    },
+  });
+
+  return res.json({ success: true, message: "Ice Plunge created" });
+});
+
+app.post("/createCardioSession", async (req, res) => {
+  const { uid, duration, date } = req.body as {
+    uid: number;
+    duration: number;
+    date: string;
+  };
+  const dateObject = new Date(date)
+
+
+  const cardioSession = await prisma.cardioSession.create({
+    data: {
+      userId: uid,
+      duration: duration,
+      date: dateObject,
+    },
+  });
+
+  return res.json({ success: true, message: "Cardio Session created" });
+
 });
